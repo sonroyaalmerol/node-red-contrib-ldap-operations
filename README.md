@@ -1,4 +1,4 @@
-# node-red-contrib-better-ldap
+# node-red-contrib-better-ldap-servicely
 
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
@@ -7,12 +7,14 @@ have been simplified to help ease of use. Time has been taken to make sure that
 the only dependency is ldapjs. This does make the code a bit more complex
 but I feel it enables a better cleaner project.  
 
+This is the servicely version for our node-RED integrations.
+
 Install
 -------
 
 Run the following command in the root directory of your Node-RED install
 
-    npm install node-red-contrib-better-ldap
+    npm install node-red-contrib-better-ldap-servicely
 
 Or add via **Manage Palette**
 
