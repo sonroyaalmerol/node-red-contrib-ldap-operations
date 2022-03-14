@@ -2,7 +2,7 @@ const ldapClient = require('./ldap');
 module.exports = function (RED) {
     'use strict';
     const mustache = require("mustache");
-    
+
     function ldapNode (n) {
         RED.nodes.createNode(this, n);
         let node = this;
@@ -28,6 +28,9 @@ module.exports = function (RED) {
                     node.error(err ? err.toString() : 'Unknown error' );
                 }
                 node.status({ fill: 'green', shape: 'dot', text: 'connected' });
+            }).catch( err => {
+                node.status({ fill: 'red', shape: 'dot', text: 'Error'});
+                node.error(err ? err.toString() : 'Unknown error' );
             });
         };
 
