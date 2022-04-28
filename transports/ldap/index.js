@@ -34,13 +34,17 @@ module.exports = function (RED) {
             });
         };
 
+        this.disconnect = function() {
+            try {
+                that.ldapClient.disconnect();
+            } catch (err) {
+                node.error(err ? err.toString() : 'Unknown error' );
+            }
+        }
+
         this.on('close', function (done) {
-            that.ldapClient.disconnect();
+            that.disconnect();
             node.status({ });
-            // if (this.tick) { clearTimeout(this.tick); }
-            // if (this.check) { clearInterval(this.check); }
-            // node.connected = false;
-            // node.emit("state"," ");
             done();
         });
     }
@@ -54,28 +58,31 @@ module.exports = function (RED) {
         this.ldapConfig = RED.nodes.getNode(n.ldap);
         let node = this;
 
-        this.ldapConfig.connect(this.ldapConfig, node);
-
         node.on('input', async function (msg) {
-            node.operation = msg.operation || node.operation;
-            node.dn = msg.dn || node.dn;
-            node.attribute = msg.attribute || node.attribute;
-            node.value = msg.payload || node.value;
-
             try {
-                node.status({ fill: 'blue', shape: 'dot', text: 'running update' });
+                this.ldapConfig.connect(this.ldapConfig, node);
+                node.operation = msg.operation || node.operation;
+                node.dn = msg.dn || node.dn;
+                node.attribute = msg.attribute || node.attribute;
+                node.value = msg.payload || node.value;
 
-                let update = await this.ldapConfig.ldapClient.update(node.dn, node.operation, node.attribute, node.value);
-                msg.ldapStatus = update;
+                try {
+                    node.status({ fill: 'blue', shape: 'dot', text: 'running update' });
 
-                node.send(msg);
+                    let update = await this.ldapConfig.ldapClient.update(node.dn, node.operation, node.attribute, node.value);
+                    msg.ldapStatus = update;
 
-                node.status({ fill: 'green', shape: 'dot', text: 'completed' });
-            } catch (err) {
-                msg.error = err;
-                node.send(msg);
-                node.status({ fill: 'red', shape: 'ring', text: 'failed' });
-                node.error(err ? err.toString() : 'Unknown error' );
+                    node.send(msg);
+
+                    node.status({ fill: 'green', shape: 'dot', text: 'completed' });
+                } catch (err) {
+                    msg.error = err;
+                    node.send(msg);
+                    node.status({ fill: 'red', shape: 'ring', text: 'failed' });
+                    node.error(err ? err.toString() : 'Unknown error' );
+                }
+            } finally {
+                this.ldapConfig.disconnect();
             }
         });
     }
@@ -89,23 +96,28 @@ module.exports = function (RED) {
         this.ldapConfig.connect(this.ldapConfig, node);
 
         node.on('input', async function (msg) {
-            node.dn = msg.dn || node.dn;
-            node.entry = msg.payload || node.entry;
-
             try {
-                node.status({ fill: 'blue', shape: 'dot', text: 'running add' });
+                this.ldapConfig.connect(this.ldapConfig, node);
+                node.dn = msg.dn || node.dn;
+                node.entry = msg.payload || node.entry;
 
-                let add = await this.ldapConfig.ldapClient.add(node.dn, node.entry);
-                msg.ldapStatus = add;
+                try {
+                    node.status({ fill: 'blue', shape: 'dot', text: 'running add' });
 
-                node.send(msg);
+                    let add = await this.ldapConfig.ldapClient.add(node.dn, node.entry);
+                    msg.ldapStatus = add;
 
-                node.status({ fill: 'green', shape: 'dot', text: 'completed' });
-            } catch (err) {
-                msg.error = err;
-                node.send(msg);
-                node.status({ fill: 'red', shape: 'ring', text: 'failed' });
-                node.error(err ? err.toString() : 'Unknown error' );
+                    node.send(msg);
+
+                    node.status({ fill: 'green', shape: 'dot', text: 'completed' });
+                } catch (err) {
+                    msg.error = err;
+                    node.send(msg);
+                    node.status({ fill: 'red', shape: 'ring', text: 'failed' });
+                    node.error(err ? err.toString() : 'Unknown error' );
+                }
+            } finally {
+                this.ldapConfig.disconnect();
             }
         });
     }
@@ -115,25 +127,28 @@ module.exports = function (RED) {
         this.ldapConfig = RED.nodes.getNode(n.ldap);
         let node = this;
 
-        this.ldapConfig.connect(this.ldapConfig, node);
-
         node.on('input', async function (msg) {
-            node.dn = msg.dn || node.dn;
-
             try {
-                node.status({ fill: 'blue', shape: 'dot', text: 'running delete' });
+                this.ldapConfig.connect(this.ldapConfig, node);
+                node.dn = msg.dn || node.dn;
 
-                let del = await this.ldapConfig.ldapClient.del(node.dn);
-                msg.ldapStatus = del;
+                try {
+                    node.status({ fill: 'blue', shape: 'dot', text: 'running delete' });
 
-                node.send(msg);
+                    let del = await this.ldapConfig.ldapClient.del(node.dn);
+                    msg.ldapStatus = del;
 
-                node.status({ fill: 'green', shape: 'dot', text: 'completed' });
-            } catch (err) {
-                msg.error = err;
-                node.send(msg);
-                node.status({ fill: 'red', shape: 'ring', text: 'failed' });
-                node.error(err ? err.toString() : 'Unknown error' );
+                    node.send(msg);
+
+                    node.status({ fill: 'green', shape: 'dot', text: 'completed' });
+                } catch (err) {
+                    msg.error = err;
+                    node.send(msg);
+                    node.status({ fill: 'red', shape: 'ring', text: 'failed' });
+                    node.error(err ? err.toString() : 'Unknown error' );
+                }
+            } finally {
+                this.ldapConfig.disconnect();
             }
         });
     }
@@ -147,28 +162,32 @@ module.exports = function (RED) {
         this.ldapConfig = RED.nodes.getNode(n.ldap);
         let node = this;
 
-        this.ldapConfig.connect(this.ldapConfig, node);
 
         node.on('input', async function (msg) {
-            node.baseDn = msg.baseDn || mustache.render(node.baseDn,msg);
-            node.searchScope = msg.searchScope || mustache.render(node.searchScope,msg);
-            node.filter = msg.filter || mustache.render(node.filter,msg);
-            node.attributes = msg.attributes || mustache.render(node.attributes,msg);
-
             try {
-                node.status({ fill: 'blue', shape: 'dot', text: 'running query' });
+                this.ldapConfig.connect(this.ldapConfig, node);
+                node.baseDn = msg.baseDn || mustache.render(node.baseDn,msg);
+                node.searchScope = msg.searchScope || mustache.render(node.searchScope,msg);
+                node.filter = msg.filter || mustache.render(node.filter,msg);
+                node.attributes = msg.attributes || mustache.render(node.attributes,msg);
 
-                let search = await this.ldapConfig.ldapClient.search(node.baseDn, { filter: node.filter, attributes: node.attributes, scope: node.searchScope });
-                msg.payload = search;
+                try {
+                    node.status({ fill: 'blue', shape: 'dot', text: 'running query' });
 
-                node.send(msg);
+                    let search = await this.ldapConfig.ldapClient.search(node.baseDn, { filter: node.filter, attributes: node.attributes, scope: node.searchScope });
+                    msg.payload = search;
 
-                node.status({ fill: 'green', shape: 'dot', text: 'completed' });
-            } catch (err) {
-                msg.error = err;
-                node.send(msg);
-                node.status({ fill: 'red', shape: 'ring', text: 'failed' });
-                node.error(err ? err.toString() : 'Unknown error' );
+                    node.send(msg);
+
+                    node.status({ fill: 'green', shape: 'dot', text: 'completed' });
+                } catch (err) {
+                    msg.error = err;
+                    node.send(msg);
+                    node.status({ fill: 'red', shape: 'ring', text: 'failed' });
+                    node.error(err ? err.toString() : 'Unknown error' );
+                }
+            } finally {
+                this.ldapConfig.disconnect();
             }
         });
     }

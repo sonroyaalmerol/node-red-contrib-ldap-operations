@@ -20,6 +20,7 @@ function ldapClient () {
      * @returns {Promise<*>}
      */
     this.connect = async function (url, username, password, options = {}) {
+        console.info("LDAP connect");
         let that = this;
         this.client = ldap.createClient({
             url,
@@ -40,6 +41,7 @@ function ldapClient () {
         });
     }
     this.disconnect = function () {
+        console.info("LDAP disconnect");
         if (this.client) {
             this.client.unbind();
         }
@@ -79,16 +81,16 @@ function ldapClient () {
      * @returns {Promise<array(object)>}
      */
     this.add = async function (dn, entry) {
-      let that = this;
+        let that = this;
 
-      return new Promise(function (resolve, reject) {
-          that.client.add(dn, entry, function(err, res) {
-              if (err) {
-                  return reject({ success: false, error: err });
-              }
-              return resolve({ success: true });
-          });
-      });
+        return new Promise(function (resolve, reject) {
+            that.client.add(dn, entry, function(err, res) {
+                if (err) {
+                    return reject({ success: false, error: err });
+                }
+                return resolve({ success: true });
+            });
+        });
     }
 
     /**
