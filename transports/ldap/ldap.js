@@ -20,7 +20,7 @@ function ldapClient () {
      * @returns {Promise<*>}
      */
     this.connect = async function (url, username, password, options = {}) {
-        console.info("LDAP connect");
+        console.info("LDAP connect", options);
         let that = this;
         this.client = ldap.createClient({
             url,

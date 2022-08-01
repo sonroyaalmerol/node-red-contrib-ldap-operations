@@ -10,19 +10,29 @@ module.exports = function (RED) {
 
         this.options = {
             host: n.host || 'ldap://localhost',
-            port: n.port || 389
+            port: n.port || 389,
+            validatecert: n.validatecert
         };
 
         node.status({ });
 
         this.connect = function(config, node) {
+
             node.status({ fill: 'blue' ,shape: 'dot', text: 'connecting...' });
 
             that.ldapClient = new ldapClient();
             that.ldapClient.random = Math.random();
 
             let url = `${config.options.host}:${config.options.port}`;
-            that.ldapClient.connect(url, config.credentials.username, config.credentials.password).then( (res, err) => {
+
+            let options = {};
+            if (config.options.validatecert === false) {
+                options = {
+                    tlsOptions: { rejectUnauthorized: false }
+                };
+            }
+
+            that.ldapClient.connect(url, config.credentials.username, config.credentials.password, options).then( (res, err) => {
                 if (err) {
                     node.status({ fill: 'red', shape: 'dot', text: 'Error'});
                     node.error(err ? err.toString() : 'Unknown error' );

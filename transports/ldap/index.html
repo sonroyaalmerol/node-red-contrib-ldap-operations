@@ -202,6 +202,10 @@
     <label for="node-config-input-password"><i class="fa fa-key"></i> Password</label>
     <input type="password" id="node-config-input-password">
   </div>
+  <div class="form-row">
+        <input type="checkbox" id="node-config-input-validatecert" style="display: inline-block; width: auto; vertical-align: top;">
+        <label style="width: auto;" for="node-config-input-validatecert"> Validate certificate</label></input>
+  </div>
 </script>
 
 <script type="text/javascript">
@@ -211,12 +215,14 @@
             defaults: {
                 host: { value: 'ldap://localhost', required: true },
                 port: { value: '389', required: true, validate: RED.validators.number() },
+                validatecert: { value: true, required: true }
             },
             credentials: {
                 username: { type: 'text' },
                 password: { type: 'password' }
             },
             exportable: false,
+            validatecert: true,
             label: function() {
                 return this.host || ''
             },
@@ -227,7 +233,12 @@
                 let v = $('#node-config-input-' + field).val();
                 v = v.trim();
                 $('#node-config-input-' + field).val(v);
-              });
+                });
+
+                this.validatecert = $("#node-config-input-validatecert").prop("checked");
+            },
+            oneditprepare: function() {
+                $( "#node-config-input-validatecert" ).prop("checked", this.validatecert);
             }
         });
     })();
