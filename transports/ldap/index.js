@@ -46,14 +46,14 @@ module.exports = function (RED) {
 
         this.disconnect = function() {
             try {
-                that.ldapClient.disconnect();
+                that.ldapClient?.disconnect();
             } catch (err) {
                 node.error(err ? err.toString() : 'Unknown error' );
             }
         }
 
         this.on('close', function (done) {
-            that.disconnect();
+            that?.disconnect();
             node.status({ });
             done();
         });
@@ -92,7 +92,7 @@ module.exports = function (RED) {
                     node.error(err ? err.toString() : 'Unknown error' );
                 }
             } finally {
-                this.ldapConfig.disconnect();
+                this.ldapConfig?.disconnect();
             }
         });
     }
@@ -127,7 +127,7 @@ module.exports = function (RED) {
                     node.error(err ? err.toString() : 'Unknown error' );
                 }
             } finally {
-                this.ldapConfig.disconnect();
+                this.ldapConfig?.disconnect();
             }
         });
     }
@@ -158,7 +158,7 @@ module.exports = function (RED) {
                     node.error(err ? err.toString() : 'Unknown error' );
                 }
             } finally {
-                this.ldapConfig.disconnect();
+                this.ldapConfig?.disconnect();
             }
         });
     }
@@ -197,7 +197,7 @@ module.exports = function (RED) {
                     node.error(err ? err.toString() : 'Unknown error' );
                 }
             } finally {
-                this.ldapConfig.disconnect();
+                this.ldapConfig?.disconnect();
             }
         });
     }
@@ -246,7 +246,7 @@ module.exports = function (RED) {
                     node.error(err ? err.toString() : 'Unknown error' );
                 }
             } finally {
-                this.ldapConfig.disconnect();
+                this.ldapConfig?.disconnect();
             }
         });
     }
@@ -292,7 +292,7 @@ module.exports = function (RED) {
                     node.error(err ? err.toString() : 'Unknown error' );
                 }
             } finally {
-                this.ldapConfig.disconnect();
+                this.ldapConfig?.disconnect();
             }
         });
     }
@@ -342,7 +342,7 @@ module.exports = function (RED) {
                     node.error(err ? err.toString() : 'Unknown error' );
                 }
             } finally {
-                this.ldapConfig.disconnect();
+                this.ldapConfig?.disconnect();
             }
         });
     }
