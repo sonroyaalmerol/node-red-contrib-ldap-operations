@@ -202,6 +202,151 @@ module.exports = function (RED) {
         });
     }
 
+    function ldapCompareNode (n) {
+        RED.nodes.createNode(this, n);
+        this.dn = n.dn;
+        this.attribute = n.attribute;
+        this.value = n.value;
+        this.ldapConfig = RED.nodes.getNode(n.ldap);
+        let node = this;
+
+        node.on('input', async function (msg) {
+            try {
+                this.ldapConfig.connect(this.ldapConfig, node);
+                node.dn = msg.dn || node.dn;
+                node.attribute = msg.attribute || node.attribute;
+                node.value = msg.value || node.value;
+
+                try {
+                    node.status({ 
+                        fill: 'blue', 
+                        shape: 'dot', 
+                        text: 'running compare' 
+                    });
+
+                    let compare = await this.ldapConfig.ldapClient.compare(
+                        node.dn, 
+                        node.attribute, 
+                        node.value
+                    );
+                    msg.ldapStatus = compare;
+                    msg.payload = compare.match;
+
+                    node.send(msg);
+
+                    node.status({ 
+                        fill: 'green', 
+                        shape: 'dot', 
+                        text: 'completed' 
+                    });
+                } catch (err) {
+                    msg.error = err;
+                    node.send(msg);
+                    node.status({ fill: 'red', shape: 'ring', text: 'failed' });
+                    node.error(err ? err.toString() : 'Unknown error' );
+                }
+            } finally {
+                this.ldapConfig.disconnect();
+            }
+        });
+    }
+
+    function ldapExtendedNode (n) {
+        RED.nodes.createNode(this, n);
+        this.oid = n.oid;
+        this.value = n.value;
+        this.ldapConfig = RED.nodes.getNode(n.ldap);
+        let node = this;
+
+        node.on('input', async function (msg) {
+            try {
+                this.ldapConfig.connect(this.ldapConfig, node);
+                node.oid = msg.oid || node.oid;
+                node.value = msg.value || msg.payload || node.value;
+
+                try {
+                    node.status({ 
+                        fill: 'blue', 
+                        shape: 'dot', 
+                        text: 'running extended' 
+                    });
+
+                    let extended = await this.ldapConfig.ldapClient.exop(
+                        node.oid, 
+                        node.value
+                    );
+                    msg.ldapStatus = extended;
+                    msg.payload = extended;
+
+                    node.send(msg);
+
+                    node.status({ 
+                        fill: 'green', 
+                        shape: 'dot', 
+                        text: 'completed' 
+                    });
+                } catch (err) {
+                    msg.error = err;
+                    node.send(msg);
+                    node.status({ fill: 'red', shape: 'ring', text: 'failed' });
+                    node.error(err ? err.toString() : 'Unknown error' );
+                }
+            } finally {
+                this.ldapConfig.disconnect();
+            }
+        });
+    }
+
+    function ldapModifyDnNode (n) {
+        RED.nodes.createNode(this, n);
+        this.dn = n.dn;
+        this.newDn = n.newDn;
+        this.deleteOldRdn = n.deleteOldRdn;
+        this.ldapConfig = RED.nodes.getNode(n.ldap);
+        let node = this;
+
+        node.on('input', async function (msg) {
+            try {
+                this.ldapConfig.connect(this.ldapConfig, node);
+                node.dn = msg.dn || node.dn;
+                node.newDn = msg.newDn || node.newDn;
+                node.deleteOldRdn = msg.hasOwnProperty('deleteOldRdn') 
+                    ? msg.deleteOldRdn 
+                    : node.deleteOldRdn;
+
+                try {
+                    node.status({ 
+                        fill: 'blue', 
+                        shape: 'dot', 
+                        text: 'running modifyDn' 
+                    });
+
+                    let modifyDn = await this.ldapConfig.ldapClient.modifyDn(
+                        node.dn, 
+                        node.newDn, 
+                        node.deleteOldRdn
+                    );
+                    msg.ldapStatus = modifyDn;
+
+                    node.send(msg);
+
+                    node.status({ 
+                        fill: 'green', 
+                        shape: 'dot', 
+                        text: 'completed' 
+                    });
+                } catch (err) {
+                    msg.error = err;
+                    node.send(msg);
+                    node.status({ fill: 'red', shape: 'ring', text: 'failed' });
+                    node.error(err ? err.toString() : 'Unknown error' );
+                }
+            } finally {
+                this.ldapConfig.disconnect();
+            }
+        });
+    }
+
     RED.nodes.registerType('ldap', ldapNode, {
         credentials: {
             username: { type: 'text' },
@@ -212,4 +357,7 @@ module.exports = function (RED) {
     RED.nodes.registerType('ldap-search in', ldapSearchNode);
     RED.nodes.registerType('ldap-add in', ldapAddNode);
     RED.nodes.registerType('ldap-del in', ldapDelNode);
+    RED.nodes.registerType('ldap-modifydn in', ldapModifyDnNode);
+    RED.nodes.registerType('ldap-compare in', ldapCompareNode);
+    RED.nodes.registerType('ldap-extended in', ldapExtendedNode);
 };

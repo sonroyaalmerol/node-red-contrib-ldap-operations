@@ -1,4 +1,4 @@
-# node-red-contrib-better-ldap-servicely
+# node-red-contrib-ldap-operations
 
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/ellerbrock/open-source-badge/)
 
@@ -14,7 +14,7 @@ Install
 
 Run the following command in the root directory of your Node-RED install
 
-    npm install node-red-contrib-better-ldap-servicely
+    npm install node-red-contrib-ldap-operations
 
 Or add via **Manage Palette**
 

@@ -186,6 +186,144 @@
   });
 </script>
 
+<script type="text/x-red" data-template-name="ldap-modifydn in">
+  <div class="form-row">
+      <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-ldap"><i class="fa fa-user"></i> Add new LDAP Server</label>
+    <input type="text" id="node-input-ldap">
+  </div>
+  <div class="form-row">
+      <label for="node-input-dn"> Current DN</label>
+      <input type="text" id="node-input-dn" placeholder="CN=jim bob,OU=users,DC=corp,DC=com">
+  </div>
+  <div class="form-row">
+      <label for="node-input-newDn"> New DN/RDN</label>
+      <input type="text" id="node-input-newDn" placeholder="CN=james robert">
+  </div>
+  <div class="form-row">
+        <input type="checkbox" id="node-input-deleteOldRdn" style="display: inline-block; width: auto; vertical-align: top;">
+        <label style="width: auto;" for="node-input-deleteOldRdn"> Delete old RDN</label>
+  </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ldap-modifydn in', {
+        category: 'storage-input',
+        color: '#AAAA66',
+        defaults: {
+            name: { value: '' },
+            ldap: { type: 'ldap', required: true },
+            dn: { value: '' },
+            newDn: { value: '' },
+            deleteOldRdn: { value: true }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'db.png',
+        label: function () {
+            return this.name || 'ldap-modifydn';
+        },
+        labelStyle: function () {
+            return this.name ? 'node_label_italic' : '';
+        },
+        oneditsave: function() {
+            this.deleteOldRdn = $("#node-input-deleteOldRdn").prop("checked");
+        },
+        oneditprepare: function() {
+            $("#node-input-deleteOldRdn").prop("checked", this.deleteOldRdn);
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ldap-compare in">
+  <div class="form-row">
+      <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-ldap"><i class="fa fa-user"></i> Add new LDAP Server</label>
+    <input type="text" id="node-input-ldap">
+  </div>
+  <div class="form-row">
+      <label for="node-input-dn"> DN</label>
+      <input type="text" id="node-input-dn" placeholder="CN=jim bob,OU=users,DC=corp,DC=com">
+  </div>
+  <div class="form-row">
+      <label for="node-input-attribute"> Attribute</label>
+      <input type="text" id="node-input-attribute" placeholder="sn">
+  </div>
+  <div class="form-row">
+      <label for="node-input-value"> Value</label>
+      <input type="text" id="node-input-value" placeholder="bob">
+  </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ldap-compare in', {
+        category: 'storage-input',
+        color: '#AAAA66',
+        defaults: {
+            name: { value: '' },
+            ldap: { type: 'ldap', required: true },
+            dn: { value: '' },
+            attribute: { value: '' },
+            value: { value: '' }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'db.png',
+        label: function () {
+            return this.name || 'ldap-compare';
+        },
+        labelStyle: function () {
+            return this.name ? 'node_label_italic' : '';
+        },
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ldap-extended in">
+  <div class="form-row">
+      <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-ldap"><i class="fa fa-user"></i> Add new LDAP Server</label>
+    <input type="text" id="node-input-ldap">
+  </div>
+  <div class="form-row">
+      <label for="node-input-oid"> OID</label>
+      <input type="text" id="node-input-oid" placeholder="1.3.6.1.4.1.4203.1.11.1">
+  </div>
+  <div class="form-row">
+      <label for="node-input-value"> Value</label>
+      <input type="text" id="node-input-value" placeholder="">
+  </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('ldap-extended in', {
+        category: 'storage-input',
+        color: '#AAAA66',
+        defaults: {
+            name: { value: '' },
+            ldap: { type: 'ldap', required: true },
+            oid: { value: '' },
+            value: { value: '' }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'db.png',
+        label: function () {
+            return this.name || 'ldap-extended';
+        },
+        labelStyle: function () {
+            return this.name ? 'node_label_italic' : '';
+        },
+    });
+</script>
 
 <script type="text/x-red" data-template-name="ldap">
   <div class="form-row">

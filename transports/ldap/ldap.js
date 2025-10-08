@@ -159,6 +159,72 @@ function ldapClient () {
         callback(item);
     };
 
+    /**
+     * @public
+     * Modify the DN of an LDAP entry (rename/move)
+     * @param {string} dn           Current DN of the object
+     * @param {string} newDn        New DN (can be relative RDN or full DN)
+     * @param {boolean} deleteOldRdn Whether to delete the old RDN attribute
+     * @returns {Promise<object>}
+     */
+    this.modifyDn = async function (dn, newDn, deleteOldRdn = true) {
+        let that = this;
+
+        return new Promise(function (resolve, reject) {
+            that.client.modifyDN(dn, newDn, function(err, res) {
+                if (err) {
+                    return reject({ success: false, error: err });
+                }
+                return resolve({ success: true });
+            });
+        });
+    };
+
+    /**
+     * @public
+     * Compare an attribute value with a stored value in LDAP
+     * @param {string} dn         DN of the object
+     * @param {string} attribute  Attribute to compare
+     * @param {string} value      Value to compare against
+     * @returns {Promise<object>}
+     */
+    this.compare = async function (dn, attribute, value) {
+        let that = this;
+
+        return new Promise(function (resolve, reject) {
+            that.client.compare(dn, attribute, value, function(err, matched) {
+                if (err) {
+                    return reject({ success: false, error: err });
+                }
+                return resolve({ success: true, match: matched });
+            });
+        });
+    };
+
+    /**
+     * @public
+     * Perform an extended operation (exop)
+     * @param {string} oid    OID of the extended operation
+     * @param {string|Buffer} value  Value/payload for the operation
+     * @returns {Promise<object>}
+     */
+    this.exop = async function (oid, value = '') {
+        let that = this;
+
+        return new Promise(function (resolve, reject) {
+            that.client.exop(oid, value, function(err, result) {
+                if (err) {
+                    return reject({ success: false, error: err });
+                }
+                return resolve({ 
+                    success: true, 
+                    responseName: result ? result.responseName : null,
+                    responseValue: result ? result.responseValue : null
+                });
+            });
+        });
+    };
+
     return this;
 }
 
